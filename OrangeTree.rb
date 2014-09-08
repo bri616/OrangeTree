@@ -30,9 +30,6 @@ class OrangeGrove
     # Depending on the soil quality, any new tree in the grove has
     # a chance of being dead
 
-    # Use 1-soil quality as a scaling factor for tree growth
-    # and fruit production
-
     # make the highest value 100 at zero trees and scale it linearly
     # with trees until there are 100 trees, and then it is 0 forever after
 
@@ -44,7 +41,7 @@ class OrangeGrove
   end
 
   def one_year_passes
-    @orange_trees.each {|orange_tree| orange_tree.one_year_passes(production_factor)}
+    @orange_trees.each {|orange_tree| orange_tree.one_year_passes(production_factor, age_limit)}
   end
 
   def production_factor
@@ -54,6 +51,16 @@ class OrangeGrove
       2
     elsif @soil_quality >75
       1
+    end
+  end
+
+  def age_limit
+    if @soil_quality < 25
+      68
+    elsif @soil_quality >= 25 && @soil_quality <=75
+      52
+    elsif @soil_quality >75
+      27
     end
   end
 
@@ -73,12 +80,12 @@ class OrangeGrove
       @oranges = []
     end
 
-    def one_year_passes(production_factor)
+    def one_year_passes(production_factor=1, age_limit=17)
       if count_the_oranges > 0
         oranges_fall_off
       end
 
-      tree_gets_older
+      tree_gets_older(age_limit)
 
       if is_alive
         tree_growth
@@ -87,9 +94,9 @@ class OrangeGrove
 
     end
 
-    def tree_gets_older
+    def tree_gets_older(age_limit)
       @age += 1
-      if @age == 17
+      if @age == age_limit
         tree_dies
       end
     end
