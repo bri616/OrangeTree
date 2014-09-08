@@ -44,8 +44,17 @@ class OrangeGrove
   end
 
   def one_year_passes
-    @orange_trees.each {|orange_tree| orange_tree.one_year_passes}
-    puts count_all_the_oranges
+    @orange_trees.each {|orange_tree| orange_tree.one_year_passes(production_factor)}
+  end
+
+  def production_factor
+    if @soil_quality < 25
+      3
+    elsif @soil_quality >= 25 && @soil_quality <=75
+      2
+    elsif @soil_quality >75
+      1
+    end
   end
 
   def count_all_the_oranges
@@ -64,7 +73,7 @@ class OrangeGrove
       @oranges = []
     end
 
-    def one_year_passes
+    def one_year_passes(production_factor)
       if count_the_oranges > 0
         oranges_fall_off
       end
@@ -73,7 +82,7 @@ class OrangeGrove
 
       if is_alive
         tree_growth
-        orange_production
+        orange_production(production_factor)
       end
 
     end
@@ -101,13 +110,13 @@ class OrangeGrove
       @is_alive = false
     end
 
-    def orange_production
+    def orange_production(production_factor)
       if @age > 5 && @age <=10
-        rand(15..20).times {oranges_grow}
+        (rand(15..20)*production_factor).times {oranges_grow}
       elsif @age >10 && @age <= 20
-        rand(20..40).times {oranges_grow}
+        (rand(20..40)*production_factor).times {oranges_grow}
       elsif @age >20
-        rand(0..5).times {oranges_grow}
+        (rand(0..5)*production_factor).times {oranges_grow}
       end
       puts "This year this tree produced #{count_the_oranges} oranges"
     end
