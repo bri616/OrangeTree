@@ -1,13 +1,46 @@
 class OrangeGrove
-  attr_accessor :orange_count
+  attr_accessor :orange_count, :soil_quality
 
   def initialize(num_of_trees)
     @orange_trees = []
+    update_soil_quality
     num_of_trees.times {add_orange_tree}
   end
 
   def add_orange_tree
-    @orange_trees << OrangeTree.new
+    orange_tree = OrangeTree.new()
+    # Based on the soil quality, each new tree has a chance of dying when added
+    if rand(0..300) < (100-@soil_quality)
+      orange_tree.tree_dies
+    else
+      orange_tree.is_alive = true
+    end
+    @orange_trees << orange_tree
+    update_soil_quality
+  end
+
+  def count_trees_in_grove
+    @orange_trees.length
+  end
+
+  def update_soil_quality
+    # Soil quality is highest when the number of trees is 0
+    # and decreases with increasing number of trees
+    # a lower value means trees live longer, produce more fruit
+    # Depending on the soil quality, any new tree in the grove has
+    # a chance of being dead
+
+    # Use 1-soil quality as a scaling factor for tree growth
+    # and fruit production
+
+    # make the highest value 100 at zero trees and scale it linearly
+    # with trees until there are 100 trees, and then it is 0 forever after
+
+    if count_trees_in_grove <= 100
+      @soil_quality = 100 - count_trees_in_grove
+    elsif count_trees_in_grove > 100
+      @soil_quality = 0
+    end
   end
 
   def one_year_passes
@@ -25,10 +58,9 @@ class OrangeGrove
   class OrangeTree
     attr_accessor :height, :age, :is_alive, :oranges
 
-    def initialize(height=0, age=0, is_alive=true)
+    def initialize(height=0, age=0)
       @height = height.to_i
       @age = age.to_i
-      @is_alive = true
       @oranges = []
     end
 
@@ -65,7 +97,7 @@ class OrangeGrove
     end
 
     def tree_dies
-      puts "Your tree got really old and died"
+      puts "This tree died"
       @is_alive = false
     end
 
