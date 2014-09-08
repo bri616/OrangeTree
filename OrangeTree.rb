@@ -1,4 +1,5 @@
 class OrangeGrove
+  attr_accessor :orange_count
 
   def initialize(num_of_trees)
     @orange_trees = []
@@ -10,7 +11,15 @@ class OrangeGrove
   end
 
   def one_year_passes
-    @orange_trees.each {|orange_tree| orange_tree.one_year_passes}  
+    @orange_trees.each {|orange_tree| orange_tree.one_year_passes}
+    puts count_all_the_oranges
+  end
+
+  def count_all_the_oranges
+    @orange_count = 0
+    @orange_trees.each do |orange_tree|
+      @orange_count = @orange_count + orange_tree.count_the_oranges
+    end
   end
 
   class OrangeTree
