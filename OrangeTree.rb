@@ -73,8 +73,12 @@ class OrangeTree
     if count_the_oranges == 0
       puts "No oranges left to pick this year!"
     else
-      @oranges.pop
-      puts "Yum, that was a delicious orange"
+      theorange = @oranges.pop
+      if theorange.color == :orange
+        puts "Yum, that was a delicious orange"
+      elsif theorange.color == :green
+        puts "Yuck, that was a green orange, not yummy"
+      end
     end
   end
 
