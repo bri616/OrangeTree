@@ -12,11 +12,11 @@ class OrangeGrove
 
   def show_current_grove(soil_art)
     orange_tree_symbols = @orange_trees.collect {|orange_tree| orange_tree.tree_art}
-    orange_totals = @orange_trees.collect {|orange_tree| orange_tree.count_the_oranges}
+    orange_totals = @orange_trees.collect {|orange_tree| orange_tree.count_the_oranges.to_s.center(3)}
     nstart = 0
     puts "-" * (12*3+11*3)
     while nstart < orange_tree_symbols.length
-      puts " " + orange_totals[nstart...nstart+12].join(" "*5) + " "
+      puts orange_totals[nstart...nstart+12].join(" "*3)
       puts orange_tree_symbols[nstart...nstart+12].join(soil_art*3)
       puts "-" * (12*3+11*3)
       nstart += 12
