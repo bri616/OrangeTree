@@ -1,10 +1,28 @@
 class OrangeGrove
-  attr_accessor :orange_count, :soil_quality
+  attr_accessor :orange_count, :soil_quality, :soil_art, :orange_trees
 
   def initialize(num_of_trees)
     @orange_trees = []
     update_soil_quality
     num_of_trees.times {add_orange_tree}
+    production_factor
+    show_current_grove(soil_art)
+    #ask_to_advance_time
+  end
+
+  def show_current_grove(soil_art)
+    orange_tree_symbols = @orange_trees.collect {|orange_tree| orange_tree.tree_art}
+    orange_totals = @orange_trees.collect {|orange_tree| orange_tree.count_the_oranges}
+    nstart = 0
+    puts "-" * (12*3+11*3)
+    while nstart+12 <= orange_tree_symbols.length
+      puts " " + orange_totals[nstart...nstart+12].join(" "*5) + " "
+      puts orange_tree_symbols[nstart...nstart+12].join(soil_art*3)
+      puts "-" * (12*3+11*3)
+      nstart += 12
+    end
+    count_all_the_oranges
+    puts "The current orange total this season is #{@orange_count}"
   end
 
   def add_orange_tree
@@ -42,14 +60,18 @@ class OrangeGrove
 
   def one_year_passes
     @orange_trees.each {|orange_tree| orange_tree.one_year_passes(production_factor, age_limit)}
+    show_current_grove(soil_art)
   end
 
   def production_factor
     if @soil_quality < 25
+      @soil_art = ","
       3
     elsif @soil_quality >= 25 && @soil_quality <=75
+      @soil_art = "."
       2
     elsif @soil_quality >75
+      @soil_art = "_"
       1
     end
   end
@@ -72,13 +94,32 @@ class OrangeGrove
   end
 
   class OrangeTree
-    attr_accessor :height, :age, :is_alive, :oranges
+    attr_accessor :height, :age, :is_alive, :oranges, :tree_art
 
     def initialize(height=0, age=0)
       @height = height.to_i
       @age = age.to_i
       @oranges = []
+      @tree_art = "_l_"
     end
+
+    def update_tree_art(age_limit)
+      if @is_alive == false
+        @tree_art="_!_"
+      elsif @age == 0 || @age == 1 || @age == age_limit-1
+        @tree_art="_l_"
+      else
+        @tree_art="<|>"
+      end
+    end
+
+    def self.plant_on(grove)
+      grove.add_orange_tree
+      # this is how I tested this, with the weirdass :: thing
+      # a la namespace sorts of things
+      # OrangeGrove::OrangeTree.plant_on(my_grove)
+    end
+
 
     def one_year_passes(production_factor=1, age_limit=17)
       if count_the_oranges > 0
@@ -91,6 +132,8 @@ class OrangeGrove
         tree_growth
         orange_production(production_factor)
       end
+
+      update_tree_art(age_limit)
 
     end
 
@@ -109,12 +152,13 @@ class OrangeGrove
 
     def tree_grows
       @height += 1
-      puts "This year, the tree grew to a height of #{@height}"
+      # puts "This year, the tree grew to a height of #{@height}"
     end
 
     def tree_dies
-      puts "This tree died"
+      # puts "This tree died"
       @is_alive = false
+      @tree_art = "_!_"
     end
 
     def orange_production(production_factor)
@@ -125,7 +169,7 @@ class OrangeGrove
       elsif @age >20
         (rand(0..5)*production_factor).times {oranges_grow}
       end
-      puts "This year this tree produced #{count_the_oranges} oranges"
+      # puts "This year this tree produced #{count_the_oranges} oranges"
     end
 
     def count_the_oranges
@@ -137,7 +181,7 @@ class OrangeGrove
     end
 
     def oranges_fall_off
-      puts "Last year's oranges fall off..."
+      # puts "Last year's oranges fall off..."
       @oranges = []
     end
 
@@ -157,8 +201,27 @@ class OrangeGrove
     class Orange
       attr_accessor :color
       def initialize
-        @color = [:orange, :green][rand(2)-1]
+        @color = [:orange, :green][rand(0..1)]
       end
     end
+  end
+end
+
+###################################
+# Some code here to make it go
+###################################
+
+my_grove = OrangeGrove.new(12)
+
+while true
+  puts "Type 'a' to add a tree or '+' to advance a year: (or 'q' to quit)"
+  input = gets.chomp
+  case input.downcase
+  when 'a'
+    my_grove.add_orange_tree
+  when '+'
+    my_grove.one_year_passes
+  when 'q'
+    break
   end
 end
